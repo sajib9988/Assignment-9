@@ -1,0 +1,127 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum MediaType {
+  MOVIE
+  SERIES
+}
+
+enum PaymentMethod {
+  ONLINE
+  CASH
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+}
+
+
+
+model User {
+  id           String         @id @default(uuid())
+  name         String
+  email        String         @unique
+  password     String
+  role         Role           @default(USER)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  Device       Device[]
+  Rating       Rating[]
+  Review       Review[]
+  Payment      Payment[]
+  WatchHistory WatchHistory[]
+}
+
+model Device {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  userAgent  String
+  ipAddress  String
+  lastActive DateTime @default(now())
+  createdAt  DateTime @default(now())
+}
+
+model Media {
+  id          String         @id @default(cuid())
+  title       String
+  description String
+  genre       String
+  thumbnail   String
+  type        MediaType
+  videoUrls   String[] 
+  amount      Float?       
+  releaseDate DateTime   
+  createdAt    DateTime       @default(now())
+ updatedAt     DateTime? @updatedAt
+  Rating       Rating[]
+  Review       Review[]
+  WatchHistory WatchHistory[]
+  Payment      Payment[]
+}
+
+model Rating {
+  id        String   @id @default(uuid())
+  userId    String
+  mediaId   String
+  rating    Int
+
+  user      User     @relation(fields: [userId], references: [id])
+  media     Media    @relation(fields: [mediaId], references: [id])
+
+  @@unique([userId, mediaId])
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  userId    String
+  mediaId   String
+  comment   String
+
+  user      User     @relation(fields: [userId], references: [id])
+  media     Media    @relation(fields: [mediaId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model WatchHistory {
+  id        String   @id @default(uuid())
+  userId    String
+  mediaId   String
+
+  user      User     @relation(fields: [userId], references: [id])
+  media     Media    @relation(fields: [mediaId], references: [id])
+
+  watchedAt DateTime @default(now())
+}
+
+model Payment {
+  id               String         @id @default(uuid())
+  userId           String
+  mediaId          String
+  amount           Float
+  method           PaymentMethod  @default(ONLINE)
+  status           PaymentStatus  @default(PENDING)
+  transactionId    String?        @unique
+  paymentGatewayData Json?
+
+  user             User           @relation(fields: [userId], references: [id])
+  media            Media          @relation(fields: [mediaId], references: [id])
+
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+}
