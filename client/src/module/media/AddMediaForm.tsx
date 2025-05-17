@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useForm, useFieldArray } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -61,7 +61,7 @@ export default function AddMediaForm() {
       description: "",
       genre: "",
       type: "MOVIE",
-      videoUrls: [{ value: "" }].map((v) => v.value),
+      videoUrls: [""],  // start with one input
       amount: 0
     }
   })
@@ -72,6 +72,19 @@ export default function AddMediaForm() {
     control: form.control,
     name: "videoUrls"
   })
+
+  // Adjust videoUrls inputs based on media type
+  useEffect(() => {
+    if (mediaType === "MOVIE" && fields.length > 1) {
+      // Remove all except first input for MOVIE
+      for (let i = fields.length - 1; i >= 1; i--) {
+        remove(i)
+      }
+    } else if ((mediaType === "MOVIE" || mediaType === "SERIES") && fields.length === 0) {
+      // Ensure at least one input is present
+      append("")
+    }
+  }, [mediaType, fields.length, append, remove])
 
   const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
