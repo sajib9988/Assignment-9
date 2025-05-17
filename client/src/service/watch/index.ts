@@ -1,4 +1,8 @@
+"use server"
+
 import { cookies } from "next/headers";
+
+
 
 export const hasPaidForMedia = async (mediaId: string) => {
   try {

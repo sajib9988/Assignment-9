@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useForm } from "react-hook-form"
+import { useForm, useFieldArray } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { Trash2, Plus } from "lucide-react"
@@ -31,24 +31,21 @@ import { createMedia } from "@/service/media"
 
 // Schema
 const mediaSchema = z.object({
-  title: z.string().min(1, "Title is required").max(100, "Title must be less than 100 characters"),
+  title: z.string().min(1, "Title is required").max(100),
   description: z.string().min(10, "Description must be at least 10 characters"),
   genre: z.string().min(1, "Genre is required"),
   type: z.enum(["MOVIE", "SERIES"]),
   videoUrls: z.array(z.string().url("Please enter a valid URL")),
-  amount: z.number().min(0, "Amount must be a positive number"),
+  amount: z.number().min(50, "Amount must be at least 50"),
   thumbnail: z.instanceof(File).optional()
-}).refine(
-  (data) => {
-    if (data.type === "MOVIE") return data.videoUrls.length === 1
-    if (data.type === "SERIES") return data.videoUrls.length > 1
-    return false
-  },
-  {
-    message: "MOVIE এর জন্য ১টি URL, এবং SERIES এর জন্য একাধিক URL দিতে হবে।",
-    path: ["videoUrls"]
-  }
-)
+}).refine((data) => {
+  if (data.type === "MOVIE") return data.videoUrls.length === 1
+  if (data.type === "SERIES") return data.videoUrls.length > 1
+  return false
+}, {
+  message: "MOVIE এর জন্য ১টি URL, এবং SERIES এর জন্য একাধিক URL দিতে হবে।",
+  path: ["videoUrls"]
+})
 
 type MediaFormValues = z.infer<typeof mediaSchema>
 
@@ -64,36 +61,24 @@ export default function AddMediaForm() {
       description: "",
       genre: "",
       type: "MOVIE",
-      videoUrls: [""],
+      videoUrls: [{ value: "" }].map((v) => v.value),
       amount: 0
     }
   })
 
   const mediaType = form.watch("type")
 
-  const addVideoUrl = () => {
-    const currentUrls = form.getValues("videoUrls")
-    form.setValue("videoUrls", [...currentUrls, ""])
-  }
-
-  const removeVideoUrl = (index: number) => {
-    const currentUrls = form.getValues("videoUrls")
-    if (currentUrls.length > 1) {
-      form.setValue(
-        "videoUrls",
-        currentUrls.filter((_, i) => i !== index)
-      )
-    }
-  }
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "videoUrls"
+  })
 
   const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
       form.setValue("thumbnail", file)
       const reader = new FileReader()
-      reader.onloadend = () => {
-        setThumbnailPreview(reader.result as string)
-      }
+      reader.onloadend = () => setThumbnailPreview(reader.result as string)
       reader.readAsDataURL(file)
     }
   }
@@ -102,23 +87,23 @@ export default function AddMediaForm() {
     try {
       setIsSubmitting(true)
 
-      const datas ={
-        title:data.title,
-        description:data.description,
-        genre:data.genre,
-        type:data.type,
-        amount:data.amount,
-        videoUrls:data.videoUrls
-      }
       const formData = new FormData()
-      
-      
+      const body = {
+        title: data.title,
+        description: data.description,
+        genre: data.genre,
+        type: data.type,
+        amount: data.amount,
+        videoUrls: data.videoUrls
+      }
+
       if (data.thumbnail) {
         formData.append("thumbnail", data.thumbnail)
       }
-       formData.append("data", JSON.stringify(datas))
-      const res = await createMedia(formData)
-      console.log(res)
+
+      formData.append("data", JSON.stringify(body))
+
+      await createMedia(formData)
       toast.success("Media created successfully!")
       form.reset()
       router.push("/")
@@ -135,6 +120,7 @@ export default function AddMediaForm() {
       <CardContent className="pt-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* Title */}
             <FormField
               control={form.control}
               name="title"
@@ -148,6 +134,7 @@ export default function AddMediaForm() {
                 </FormItem>
               )}
             />
+            {/* Description */}
             <FormField
               control={form.control}
               name="description"
@@ -161,6 +148,7 @@ export default function AddMediaForm() {
                 </FormItem>
               )}
             />
+            {/* Genre & Amount */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField
                 control={form.control}
@@ -194,6 +182,7 @@ export default function AddMediaForm() {
                 )}
               />
             </div>
+            {/* Type */}
             <FormField
               control={form.control}
               name="type"
@@ -220,6 +209,7 @@ export default function AddMediaForm() {
                 </FormItem>
               )}
             />
+            {/* Thumbnail */}
             <FormField
               control={form.control}
               name="thumbnail"
@@ -246,18 +236,19 @@ export default function AddMediaForm() {
                 </FormItem>
               )}
             />
+            {/* Video URLs */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <FormLabel>Video URLs</FormLabel>
                 {mediaType === "SERIES" && (
-                  <Button type="button" variant="outline" size="sm" onClick={addVideoUrl}>
+                  <Button type="button" variant="outline" size="sm" onClick={() => append("")}>
                     <Plus className="h-4 w-4 mr-2" />
                     Add Episode
                   </Button>
                 )}
               </div>
-              {form.getValues("videoUrls").map((_, index) => (
-                <div key={index} className="flex items-center gap-2">
+              {fields.map((field, index) => (
+                <div key={field.id} className="flex items-center gap-2">
                   <FormField
                     control={form.control}
                     name={`videoUrls.${index}`}
@@ -273,13 +264,8 @@ export default function AddMediaForm() {
                       </FormItem>
                     )}
                   />
-                  {mediaType === "SERIES" && form.getValues("videoUrls").length > 1 && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => removeVideoUrl(index)}
-                    >
+                  {mediaType === "SERIES" && fields.length > 1 && (
+                    <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)}>
                       <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
                   )}
@@ -291,6 +277,7 @@ export default function AddMediaForm() {
                 </p>
               )}
             </div>
+            {/* Submit */}
             <Button type="submit" className="w-full" disabled={isSubmitting}>
               {isSubmitting ? "Creating..." : "Create Media"}
             </Button>
