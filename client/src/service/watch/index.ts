@@ -1,15 +1,29 @@
-"use server"
+import { cookies } from "next/headers";
 
+export const hasPaidForMedia = async (mediaId: string) => {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_API}/watch/access/${mediaId}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: (await cookies()).get("accessToken")!.value,
+        },
+      }
+    );
 
-export const hasPaidForMedia =async ()=>{
-try{
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/watch/access/:mediaId`,
+    if (!res.ok) {
+      console.error("Failed to fetch purchase status");
+      return false;
+    }
 
-    ) 
-    return res;
-}
-catch (error) {
-    console.error('Error checking media payment status:', error);
+    const data = await res.json();
+    console.log("watch", data);
+
+    // ✅ শুধু access boolean return করো
+    return data?.data?.access ?? false;
+  } catch (error) {
+    console.error("Error checking media payment status:", error);
     return false;
-}
-}
+  }
+};

@@ -102,6 +102,18 @@ const getAllMedia = async (
   };
   
 
+const singleMediaId = async (mediaId: string) => {
+  const existingMedia = await prisma.media.findUnique({
+    where: { id: mediaId },
+  });
+
+  if (!existingMedia) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Media not found');
+  }
+
+  return existingMedia;
+};
+
 const updateMedia = async (mediaId: string, payload: any, file?: Express.Multer.File) => {
   const existingMedia = await prisma.media.findUnique({ where: { id: mediaId } });
   if (!existingMedia) throw new ApiError(httpStatus.NOT_FOUND, 'Media not found');
@@ -128,6 +140,7 @@ export const mediaService =
  { createMedia, 
   getAllMedia,
    updateMedia, 
-   deleteMedia 
+   deleteMedia ,
+   singleMediaId
 
  };

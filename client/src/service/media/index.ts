@@ -40,10 +40,15 @@ export const getAllMedia = async () => {
 
 // Get Single Media by ID
 export const getMediaById = async (mediaId: string) => {
+  const accessToken = (await cookies()).get("accessToken")?.value;
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/media/${mediaId}`, {
-      next: { tags: ["MEDIA"] },
+      headers: {
+        Authorization: accessToken as string
+      }
     });
+    console.log('api',`${process.env.NEXT_PUBLIC_BASE_API}/media/${mediaId}`)
+    
     return res.json();
   } catch (error: any) {
     return Error(error);
