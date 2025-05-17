@@ -1,6 +1,6 @@
 "use server";
 
-import { log } from "console";
+
 import { revalidateTag } from "next/cache";
 
 import { cookies } from "next/headers";

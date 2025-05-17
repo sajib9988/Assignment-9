@@ -1,26 +1,26 @@
-import ProductBanner from "@/components/modules/products/banner";
-import ProductDetails from "@/components/modules/products/productDetails";
-import NMContainer from "@/components/ui/core/NMContainer";
-import { getSingleProduct } from "@/service/product";
+import { getMediaById } from "@/service/media";
+
+
 
 
 const ProductDetailsPage = async ({
   params,
 }: {
-  params: Promise<{ productId: string }>;
+  params: Promise<{ mediaId: string }>;
 }) => {
-  const { productId } = await params;
+  const { mediaId } = await params;
 
-  const { data: product } = await getSingleProduct(productId);
+  const { data: media } = await getMediaById(mediaId);
 
   return (
-    <NMContainer>
-      <ProductBanner
-        title="Product Details"
-        path="Product Details"
-      />
-      <ProductDetails product={product} />
-    </NMContainer>
+
+     
+   <div>
+ <ProductDetails media={media} />
+   </div>
+ 
+     
+
   );
 };
 
