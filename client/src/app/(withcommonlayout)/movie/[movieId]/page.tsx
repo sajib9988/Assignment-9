@@ -1,9 +1,11 @@
+import MediaDetails from "@/module/detailsPage/MediaDetailsPage";
 import { getMediaById } from "@/service/media";
+import { hasPaidForMedia } from "@/service/watch";
 
 
 
 
-const ProductDetailsPage = async ({
+const MediaDetailsPage = async ({
   params,
 }: {
   params: Promise<{ mediaId: string }>;
@@ -11,12 +13,15 @@ const ProductDetailsPage = async ({
   const { mediaId } = await params;
 
   const { data: media } = await getMediaById(mediaId);
+  const response = await hasPaidForMedia() as any;
+  const hasPurchased = response && 'data' in response ? response.data : false;
 
   return (
 
      
    <div>
- <ProductDetails media={media} />
+ 
+ <MediaDetails media={media} hasPurchased={hasPurchased} />
    </div>
  
      
@@ -24,4 +29,4 @@ const ProductDetailsPage = async ({
   );
 };
 
-export default ProductDetailsPage;
+export default MediaDetailsPage;
