@@ -45,12 +45,12 @@ export default function Payment({ content, user }: PaymentComponentProps) {
     try {
       const result = await createPayment(paymentData);
       console.log("Payment API Response:", result);
-      if (result?.paymentUrl) {
-        console.log("Redirecting to:", result.paymentUrl); // রিডাইরেক্ট URL ডিবাগ
-        window.location.href = result.paymentUrl;
-      } else {
-        alert("Payment initiation failed!");
-      }
+     if (result?.data?.paymentUrl) {
+  window.location.href = result.data.paymentUrl;
+} else {
+  alert("Payment initiation failed!");
+}
+
     } catch (error: any) {
       console.error("Payment error:", error);
       alert(error.message || "Something went wrong.");
