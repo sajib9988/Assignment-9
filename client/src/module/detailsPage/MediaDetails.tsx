@@ -61,7 +61,7 @@ const MediaDetails = ({ media, hasPurchased }: MediaDetailsProps) => {
           className="w-full mt-5"
           onClick={() =>
             router.push(
-              hasPurchased ? `/watch/${media.id}` : `/checkout/${media.id}`
+              hasPurchased ? `/watch/${media.id}` : `/cart/${media.id}`
             )
           }
         >

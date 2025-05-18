@@ -1,25 +1,32 @@
-// import Address from "@/components/modules/cart/Address";
-// import CartProducts from "@/components/modules/cart/CartProducts";
+"use client";
 
-// import PaymentDetails from "@/components/modules/cart/PaymentDetails";
-// import ProductBanner from "@/components/modules/products/banner";
-// import NMContainer from "@/components/ui/core/NMContainer";
+import { useUser } from "@/context/userContext";
+import Payment from "@/module/payment/Payment";
+
+import { getAllMedia } from "@/service/media";
+import { useEffect, useState } from "react";
 
 const CartPage = () => {
-  return (
-    // <NMContainer>
-    //   <ProductBanner title="Cart Page" path="Home - Cart" />
-    //   <div className="grid grid-cols-12 gap-8 my-5">
-    //     <CartProducts />
-    //    <Address></Address>
-    //     <PaymentDetails /> {/* ✅ এখানে কম্পোনেন্ট ক্লোজ করা হয়েছে */}
-    //   </div>
-    // </NMContainer>
+  const { user } = useUser();
+  const [content, setContent] = useState<any>(null);
 
-    <div>
-      <h1>
-      handleLogout
-      </h1></div>
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await getAllMedia();
+      if (response?.data?.data?.length > 0) {
+        setContent(response.data.data[0]); // একটাই Media দিচ্ছি
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (!user || !content) return <div>Loading...</div>;
+
+  return (
+    <div className="max-w-md mx-auto mt-10">
+      <Payment content={content} user={user} />
+    </div>
   );
 };
 
