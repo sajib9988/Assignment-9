@@ -45,6 +45,7 @@ const logInUser = async (
   const accessToken = jwtHelpers.createToken(
     { userId: userData.id,
       email: userData.email,
+      name:userData.name,
       role: userData.role,
     },
     config.jwt.secret as string,
@@ -54,6 +55,7 @@ const logInUser = async (
   const newRefreshToken = jwtHelpers.createToken(
     { userId: userData.id,
       email: userData.email,
+      name:userData.name,
       role: userData.role,
     },
     config.jwt.refresh_token_secret as string,
@@ -81,6 +83,7 @@ const refreshToken = async (token: string) => {
   const accessToken = jwtHelpers.createToken(
     { userId: userData.id,
       email: userData.email,
+      name:userData.name,
       role: userData.role,
     },
     config.jwt.secret as string,

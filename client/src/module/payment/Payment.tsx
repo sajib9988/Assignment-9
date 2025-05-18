@@ -25,9 +25,7 @@ interface PaymentComponentProps {
 export default function Payment({ content, user }: PaymentComponentProps) {
   const [loading, setLoading] = useState(false);
 
-  console.log("Content ID:", content.id);
-  console.log("Full Content Object:", content);
-  console.log("User Data:", user);
+
 
   const handleCreatePayment = async () => {
     setLoading(true);
