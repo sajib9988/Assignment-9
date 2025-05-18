@@ -47,7 +47,7 @@ export const getMediaById = async (mediaId: string) => {
         Authorization: accessToken as string
       }
     });
-    console.log('api',`${process.env.NEXT_PUBLIC_BASE_API}/media/${mediaId}`)
+    // console.log('api',`${process.env.NEXT_PUBLIC_BASE_API}/media/${mediaId}`)
     
     return res.json();
   } catch (error: any) {

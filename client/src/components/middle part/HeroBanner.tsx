@@ -17,7 +17,7 @@ const HeroBanner = () => {
     const fetchMedia = async () => {
       try {
         const response: MediaResponse = await getAllMedia();
-        console.log(response)
+        // console.log(response)
         if (response.data.data.length > 0) {
           setMedia(response.data.data[0]);
         }

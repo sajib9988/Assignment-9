@@ -1,21 +1,34 @@
+import ApiError from "../../errors/apiError";
 import { prisma } from "../../middleware/prisma";
 import { IPaymentData } from "../ssl-commerce/ssl.interface";
 import { SSLService } from "../ssl-commerce/ssl.service";
 
-const initPayment = async (contentId: string, paymentInfo: { userId: string; type: 'MOVIE' | 'SERIES'; amount: number; name: string; email: string;  }) => {
+const initPayment = async (
+  contentId: string,
+  paymentInfo: { userId: string; type: "MOVIE" | "SERIES"; amount: number; name: string; email: string }
+) => {
   const { userId, type, amount, name, email } = paymentInfo;
 
+  console.log("Received Content ID in initPayment:", contentId);
 
+  if (!contentId || contentId === "undefined") {
+    throw new ApiError(400, "Content ID is missing or invalid");
+  }
 
-  // Check if the media exists and matches the type
-  const mediaData = await prisma.media.findFirstOrThrow({
+  const mediaData = await prisma.media.findFirst({
     where: {
       id: contentId,
       type,
     },
   });
 
-  // Check if payment record exists or create a new one
+  if (!mediaData) {
+    console.log("Media not found for", { contentId, type });
+    throw new ApiError(400, "Media not found");
+  }
+
+  console.log("Found Media Data:", mediaData); // মিডিয়া ডেটা ডিবাগ
+
   let paymentData = await prisma.payment.findFirst({
     where: {
       mediaId: contentId,
@@ -31,12 +44,14 @@ const initPayment = async (contentId: string, paymentInfo: { userId: string; typ
         userId,
         mediaId: contentId,
         amount,
-        method: 'ONLINE',
-        status: 'PENDING',
+        method: "ONLINE",
+        status: "PENDING",
         transactionId,
       },
     });
   }
+
+  console.log("Created/Found Payment Data:", paymentData); // পেমেন্ট ডেটা ডিবাগ
 
   const initPaymentData: IPaymentData = {
     amount,
@@ -45,10 +60,11 @@ const initPayment = async (contentId: string, paymentInfo: { userId: string; typ
     email,
     userId,
     contentId,
-    type: type.toUpperCase() as 'MOVIE' | 'SERIES',
+    type: type.toUpperCase() as "MOVIE" | "SERIES",
   };
 
   const result = await SSLService.initPayment(initPaymentData);
+  console.log("SSL Service Response:", result); // SSL রেসপন্স
   return {
     paymentUrl: result.GatewayPageURL,
   };
@@ -57,9 +73,10 @@ const initPayment = async (contentId: string, paymentInfo: { userId: string; typ
 const validatePayment = async (payload: any) => {
   const response = await SSLService.validatePayment(payload);
 
-  if (!response || response.status !== 'VALID') {
+  if (!response || response.status !== "VALID") {
+    console.log("Payment Validation Failed:", response);
     return {
-      message: 'Payment Failed!',
+      message: "Payment Failed!",
     };
   }
 
@@ -69,12 +86,11 @@ const validatePayment = async (payload: any) => {
         transactionId: response.tran_id,
       },
       data: {
-        status: 'PAID',
+        status: "PAID",
         paymentGatewayData: response,
       },
     });
 
-    // Add to WatchHistory to grant access to the media
     await tx.watchHistory.create({
       data: {
         userId: updatedPaymentData.userId,
@@ -83,8 +99,9 @@ const validatePayment = async (payload: any) => {
     });
   });
 
+  console.log("Payment Validation Success:", response);
   return {
-    message: 'Payment success!',
+    message: "Payment success!",
   };
 };
 

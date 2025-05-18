@@ -14,7 +14,7 @@ const MediaDetailsPage = async ({ params }: MediaDetailsPageProps) => {
 
   const res = await getMediaById(mediaId);
 
-  console.log('res', res)
+  // console.log('res', res)
 
 
   
@@ -22,7 +22,7 @@ const MediaDetailsPage = async ({ params }: MediaDetailsPageProps) => {
 
   const hasPurchased = await hasPaidForMedia(mediaId);
 
-console.log("hahh",hasPurchased)
+// console.log("hahh",hasPurchased)
   return (
     <div className="mt-5">
       <MediaDetails media={res.data} hasPurchased={hasPurchased} />

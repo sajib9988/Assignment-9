@@ -23,6 +23,7 @@ export const createPayment = async (data: Record<string, any>) => {
         body: JSON.stringify(data),
       }
     );
+console.log("API payment URL:", `${process.env.NEXT_PUBLIC_BASE_API}/payment/init-payment/${data.contentId}`);
 
     if (!res.ok) {
       const error = await res.json();

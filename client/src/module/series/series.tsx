@@ -23,7 +23,7 @@ const Series = () => {
           setSeriesList(onlySeries)
         }
       } catch (error) {
-        console.error('Error fetching media:', error)
+        // console.error('Error fetching media:', error)
       } finally {
         setLoading(false)
       }

@@ -14,7 +14,7 @@ const MediaDetails = ({ media, hasPurchased }: MediaDetailsProps) => {
   const router = useRouter();
   const data= hasPurchased
 
-  console.log('has', hasPurchased)
+  // console.log('has', hasPurchased)
   const releaseDate = media?.releaseDate
     ? new Date(media.releaseDate).toLocaleDateString()
     : "N/A";

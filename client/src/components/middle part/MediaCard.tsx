@@ -23,7 +23,7 @@ const MediaCard = ({ title, category }: MediaRowProps) => {
           setMediaList(response.data.data);
         }
       } catch (error) {
-        console.error('Error fetching media:', error);
+        // console.error('Error fetching media:', error);
       } finally {
         setLoading(false);
       }
@@ -59,7 +59,7 @@ const MediaCard = ({ title, category }: MediaRowProps) => {
             >
               <div className="aspect-[2/3] relative">
                 <Image
-                  src={item.thumbnail || 'https://via.placeholder.com/300x450?text=No+Image'}
+                  src={item.thumbnail as string}
                   alt={item.title}
                   fill
                   className="object-cover"

@@ -50,7 +50,7 @@ const onSubmit = async (data: LoginSchema) => {
       toast.error(res.message || "Login failed");
     }
   } catch (error: any) {
-    console.error("Login error:", error);
+    // console.error("Login error:", error);
     toast.error("Something went wrong during login");
   }
 };

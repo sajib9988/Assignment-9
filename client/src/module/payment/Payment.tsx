@@ -1,19 +1,18 @@
 "use client";
 
 import { useState } from "react";
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
 import { Loader2 } from "lucide-react";
 import { IPaymentData } from "@/type/type";
 import { createPayment } from "@/service/payement";
 
 interface PaymentComponentProps {
   content: {
-    _id: string;
+    id: string;
     title: string;
-    price: number;
+    amount: number;
+    thumbnail: string;
     type: "MOVIE" | "SERIES";
   };
   user: {
@@ -26,23 +25,30 @@ interface PaymentComponentProps {
 export default function Payment({ content, user }: PaymentComponentProps) {
   const [loading, setLoading] = useState(false);
 
+  console.log("Content ID:", content.id);
+  console.log("Full Content Object:", content);
+  console.log("User Data:", user);
+
   const handleCreatePayment = async () => {
     setLoading(true);
 
     const paymentData: IPaymentData = {
-      contentId: content._id,
-      amount: content.price,
+      contentId: content.id,
+      amount: content.amount,
       email: user.email,
       name: user.name,
       type: content.type,
       userId: user.userId,
-      transactionId: "", // Backend will generate
+      transactionId: "",
     };
+
+    console.log("Payment Data to be sent:", paymentData);
 
     try {
       const result = await createPayment(paymentData);
-
+      console.log("Payment API Response:", result);
       if (result?.redirectUrl) {
+        console.log("Redirecting to:", result.redirectUrl); // রিডাইরেক্ট URL ডিবাগ
         window.location.href = result.redirectUrl;
       } else {
         alert("Payment initiation failed!");
@@ -56,25 +62,37 @@ export default function Payment({ content, user }: PaymentComponentProps) {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>
-          Buy {content.type === "MOVIE" ? "Movie" : "Series"}: {content.title}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p className="text-muted-foreground mb-4">Price: ৳{content.price}</p>
-        <Button onClick={handleCreatePayment} disabled={loading}>
-          {loading ? (
-            <>
-              <Loader2 className="animate-spin mr-2 h-4 w-4" />
-              Processing...
-            </>
-          ) : (
-            `Pay Now ৳${content.price}`
-          )}
-        </Button>
-      </CardContent>
+    <Card className="flex flex-col md:flex-row items-start gap-4 p-4">
+      <div className="w-full md:w-1/2">
+        <img
+          src={content.thumbnail}
+          alt={content.title}
+          className="w-full h-auto rounded-md"
+        />
+      </div>
+
+      <div className="w-full md:w-1/2">
+        <CardHeader className="p-0 pb-2">
+          <CardTitle>
+            {content.type === "MOVIE" ? "Movie" : "Series"}: {content.title}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-0 pt-2">
+          <p className="text-muted-foreground mb-4 text-sm">
+            Price: ৳{content.amount}
+          </p>
+          <Button onClick={handleCreatePayment} disabled={loading}>
+            {loading ? (
+              <>
+                <Loader2 className="animate-spin mr-2 h-4 w-4" />
+                Processing...
+              </>
+            ) : (
+              `Pay Now ৳${content.amount}`
+            )}
+          </Button>
+        </CardContent>
+      </div>
     </Card>
   );
 }

@@ -19,7 +19,7 @@ const navLinks = [
 
 const Navbar = () => {
   const { user, setUser } = useUser();
-  console.log(user)
+  // console.log(user)
   const pathname = usePathname();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
