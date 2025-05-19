@@ -11,7 +11,7 @@ import { IJwtPayload } from "../auth/auth.interface";
 
 const addToWatchHistory = catchAsync(async (req: Request, res: Response) => {
   const user = req.user as IJwtPayload;
-  console.log(user);
+  // console.log(user);
   const { mediaId } = req.body;
 
   const hasAccess = await watchService.hasPaidForMedia(user.userId!, mediaId);

@@ -7,7 +7,7 @@ import { reviewService } from './review.service';
 
 const createReview = catchAsync(async (req: Request, res: Response) => {
   const userId = req.user?.userId ;
-  console.log(userId);
+  // console.log(userId);
   
   const reviewData = { ...req.body, userId };
   const result = await reviewService.createReview(reviewData);

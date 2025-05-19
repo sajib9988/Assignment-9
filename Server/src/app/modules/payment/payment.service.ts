@@ -1,3 +1,4 @@
+import { PaymentStatus } from "@prisma/client";
 import ApiError from "../../errors/apiError";
 import { prisma } from "../../middleware/prisma";
 import { IPaymentData } from "../ssl-commerce/ssl.interface";
@@ -9,7 +10,7 @@ const initPayment = async (
 ) => {
   const { userId, type, amount, name, email } = paymentInfo;
 
-  console.log("Received Content ID in initPayment:", contentId);
+  // console.log("Received Content ID in initPayment:", contentId);
 
   if (!contentId || contentId === "undefined") {
     throw new ApiError(400, "Content ID is missing or invalid");
@@ -27,7 +28,7 @@ const initPayment = async (
     throw new ApiError(400, "Media not found");
   }
 
-  console.log("Found Media Data:", mediaData); // মিডিয়া ডেটা ডিবাগ
+  // console.log("Found Media Data:", mediaData); // মিডিয়া ডেটা ডিবাগ
 
   let paymentData = await prisma.payment.findFirst({
     where: {
@@ -45,7 +46,7 @@ const initPayment = async (
         mediaId: contentId,
         amount,
         method: "ONLINE",
-        status: "PENDING",
+        status: "PAID",
         transactionId,
       },
     });
@@ -64,7 +65,7 @@ const initPayment = async (
   };
 
   const result = await SSLService.initPayment(initPaymentData);
-  console.log("SSL Service Response:", result); // SSL রেসপন্স
+  // console.log("SSL Service Response:", result); // SSL রেসপন্স
   return {
     paymentUrl: result.GatewayPageURL,
   };
@@ -74,7 +75,7 @@ const validatePayment = async (payload: any) => {
   const response = await SSLService.validatePayment(payload);
 
   if (!response || response.status !== "VALID") {
-    console.log("Payment Validation Failed:", response);
+    // console.log("Payment Validation Failed:", response);
     return {
       message: "Payment Failed!",
     };
@@ -105,7 +106,29 @@ const validatePayment = async (payload: any) => {
   };
 };
 
+const getPaymentStatus = async (userId: string, contentId: string) => {
+  const payment = await prisma.payment.findFirst({
+    where: {
+      userId,
+      mediaId: contentId,
+      status: PaymentStatus.PAID,
+    },
+  });
+  console.log('userid',userId);
+  console.log('contentId',contentId);
+console.log("Payment Status:", payment); // পেমেন্ট স্ট্যাটাস ডিবাগ
+  return {
+    status: payment ? PaymentStatus.PAID : PaymentStatus.PENDING,
+    transactionId: payment?.transactionId,
+    amount: payment?.amount,
+    method: payment?.method,
+    date: payment?.createdAt
+  };
+};
+
+
 export const PaymentService = {
   initPayment,
   validatePayment,
+  getPaymentStatus,
 };
