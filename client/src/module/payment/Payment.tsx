@@ -20,10 +20,10 @@ interface PaymentComponentProps {
     email: string;
     userId: string;
   };
-  status: any;
+
 }
 
-export default function Payment({ content, user, status }: PaymentComponentProps) {
+export default function Payment({ content, user }: PaymentComponentProps) {
   const [loading, setLoading] = useState(false);
 
 

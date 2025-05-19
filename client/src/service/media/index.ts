@@ -45,7 +45,8 @@ export const getMediaById = async (mediaId: string) => {
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/media/${mediaId}`, {
       headers: {
         Authorization: accessToken as string
-      }
+      },
+      next: { tags: ["MEDIA"] },
     });
     // console.log('api',`${process.env.NEXT_PUBLIC_BASE_API}/media/${mediaId}`)
     
@@ -79,7 +80,7 @@ export const deleteMedia = async (mediaId: string) => {
       method: "DELETE",
       headers: {
         Authorization: (await cookies()).get("accessToken")!.value,
-      },
+      }
     });
     revalidateTag("MEDIA");
     return res.json();

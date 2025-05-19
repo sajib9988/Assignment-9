@@ -106,29 +106,10 @@ const validatePayment = async (payload: any) => {
   };
 };
 
-const getPaymentStatus = async (userId: string, contentId: string) => {
-  const payment = await prisma.payment.findFirst({
-    where: {
-      userId,
-      mediaId: contentId,
-      status: PaymentStatus.PAID,
-    },
-  });
-  console.log('userid',userId);
-  console.log('contentId',contentId);
-console.log("Payment Status:", payment); // পেমেন্ট স্ট্যাটাস ডিবাগ
-  return {
-    status: payment ? PaymentStatus.PAID : PaymentStatus.PENDING,
-    transactionId: payment?.transactionId,
-    amount: payment?.amount,
-    method: payment?.method,
-    date: payment?.createdAt
-  };
-};
 
 
 export const PaymentService = {
   initPayment,
   validatePayment,
-  getPaymentStatus,
+
 };

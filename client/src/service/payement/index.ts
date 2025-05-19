@@ -95,33 +95,3 @@ export const getMyPayments = async () => {
   }
 };
 
-export const getPaymentStatus = async (contentId: string) => {
-  const accessToken = (await cookies()).get("accessToken")?.value;
-
-  if (!accessToken) {
-    throw new Error("Unauthorized: No access token found");
-  }
-
-  try {
-  console.log("API payment status URL:", `${process.env.NEXT_PUBLIC_BASE_API}/payment/status/${contentId}`);
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/payment/status/${contentId}`, {
-    headers: {
-      Authorization: accessToken
-    }
-  });
-
-    if (!res.ok) {
-      const error = await res.json();
-      throw new Error(error.message || "Failed to fetch payment status");
-    }
-
-    const data = await res.json();
-    console.log("Payment status data:", data);
-    return data?.data;
-  } catch (error: any) {
-    return {
-      status: "PENDING",
-      error: error?.message || "Unknown error",
-    };
-  }
-};

@@ -30,6 +30,7 @@ const adminData = {
     { title: "Dashboard", url: "/admin/dashboard", icon: SquareTerminal },
     { title: "User Management", url: "/admin/users", icon: Users },
     { title: "Movies & Series", url: "/admin/media", icon: Clapperboard },
+    { title: "Movies-table", url: "/admin/media-table", icon: Clapperboard },
     { title: "Reviews", url: "/admin/reviews", icon: Star },
     { title: "Orders", url: "/admin/orders", icon: FileText },
     { title: "Payments", url: "/admin/payments", icon: CreditCard },

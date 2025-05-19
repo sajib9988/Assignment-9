@@ -6,7 +6,7 @@ import { getMediaById } from "@/service/media"; // replace getAllMedia
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 ;
-import { getPaymentStatus } from "@/service/payement";
+
 
 const CartPage = () => {
   const { user } = useUser();
@@ -30,21 +30,6 @@ const CartPage = () => {
     }
   }, [mediaId]);
 
-useEffect(()=>{
-  const fetchPaymentStatus = async () => {
-    try {
-      const response = await getPaymentStatus(mediaId);
-      setStatus(response);
-      console.log("Payment status:", response);
-    } catch (error) {
-      console.error("Error fetching payment status:", error);
-    }
-  };
-
-  if (mediaId) {
-    fetchPaymentStatus();
-  }
-},[mediaId])
 
 
 
@@ -54,7 +39,7 @@ useEffect(()=>{
 
   return (
     <div className="w-1/2 mx-auto mt-10">
-      <Payment content={content} user={user} status={status} />
+      <Payment content={content} user={user}  />
     </div>
   );
 };
