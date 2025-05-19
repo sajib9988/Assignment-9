@@ -10,11 +10,11 @@ interface ConfirmDeleteModalProps {
 const ConfirmDeleteModal = ({ open, onClose, onConfirm, title }: ConfirmDeleteModalProps) => {
   return (
     <div
-      className={`fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center ${
+      className={`fixed inset-0 bg-black-10 bg-opacity-50 flex justify-center items-center ${
         open ? "block" : "hidden"
       }`}
     >
-      <div className="bg-white p-6 rounded shadow-md max-w-sm w-full">
+      <div className="bg-green-50 border-1 p-6 rounded shadow-md max-w-sm w-full">
         <h3 className="text-lg font-semibold mb-4">{title}</h3>
         <div className="flex justify-end space-x-4">
           <Button variant="outline" onClick={onClose}>

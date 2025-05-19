@@ -75,16 +75,26 @@ export const updateMedia = async (mediaId: string, data: FormData) => {
 
 // Delete Media
 export const deleteMedia = async (mediaId: string) => {
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/media/${mediaId}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: (await cookies()).get("accessToken")!.value,
-      }
-    });
-    revalidateTag("MEDIA");
-    return res.json();
-  } catch (error: any) {
-    return Error(error);
+  const accessToken = (await cookies()).get("accessToken")?.value;
+  if (!accessToken) {
+    throw new Error("Authorization token is required");
   }
+  console.log("Deleting mediaId:", mediaId);
+  console.log("Using token:", accessToken);
+
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/media/delete-media/${mediaId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: accessToken,
+    },
+  });
+
+  console.log("Response status:", res.status);
+  if (!res.ok) {
+    const error = await res.text();
+    console.error("Delete failed:", error);
+    throw new Error(error || "Delete failed");
+  }
+  return res.json();
 };
+
