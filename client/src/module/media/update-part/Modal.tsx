@@ -3,13 +3,14 @@
 import { ReactNode } from "react";
 
 interface ModalProps {
-  isOpen: boolean;
+  open: boolean; // Changed from isOpen to open for consistency
   onClose: () => void;
   children: ReactNode;
+  title?: string; // Added title prop
 }
 
-export function Modal({ isOpen, onClose, children }: ModalProps) {
-  if (!isOpen) return null;
+export function Modal({ open, onClose, children, title }: ModalProps) {
+  if (!open) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
@@ -35,6 +36,10 @@ export function Modal({ isOpen, onClose, children }: ModalProps) {
             />
           </svg>
         </button>
+        
+        {/* Title */}
+        {title && <h2 className="text-xl font-semibold mb-4">{title}</h2>}
+        
         {/* Modal Content */}
         <div>{children}</div>
       </div>
