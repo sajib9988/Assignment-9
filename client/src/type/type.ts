@@ -137,3 +137,39 @@ export type IPaymentData = {
 };
 
 
+
+// type/type.ts
+// for serach type
+
+
+export interface IMediaFilter {
+  searchTerm?: string;
+  genre?: string;
+  title?: string;
+  type?: "MOVIE" | "SERIES" | "ALL"; // এখানে "ALL" যোগ করলাম
+  releaseDate?: string;
+}
+
+export interface IOptionsMedia {
+  page?: number;
+  limit?: number;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+}
+
+// ✅ Combined type
+export type MediaQueryParams = IOptionsMedia & IMediaFilter;
+
+// Get All Media
+export interface MediaParams {
+  searchTerm?: string;
+  genre?: string;
+  title?: string;
+  type?: 'MOVIE' | 'SERIES';
+  releaseDate?: string;
+  page?: number;
+  limit?: number;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+}
+  

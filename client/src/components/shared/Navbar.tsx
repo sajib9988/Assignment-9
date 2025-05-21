@@ -19,11 +19,11 @@ const navLinks = [
 
 const Navbar = () => {
   const { user, setUser } = useUser();
-  // console.log(user)
   const pathname = usePathname();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -44,6 +44,15 @@ const Navbar = () => {
     }
   };
 
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchTerm.trim()) {
+      router.push(`${process.env.NEXT_PUBLIC_BASE_API}/media/get-all-media?search=${searchTerm.trim()}`);
+      setSearchTerm('');
+      setIsSearchOpen(false);
+    }
+  };
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-black shadow-md m-2 rounded-xl">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
@@ -60,10 +69,9 @@ const Navbar = () => {
                 key={href}
                 href={href}
                 className={`relative px-3 py-1 rounded-md font-medium transition-all duration-200
-                  ${
-                    isActive
-                      ? 'text-stone-200 font-semibold shadow-inner bg-gradient-to-t from-stone-800/70 to-stone-900/0 border border-stone-600'
-                      : ''
+                  ${isActive
+                    ? 'text-stone-200 font-semibold shadow-inner bg-gradient-to-t from-stone-800/70 to-stone-900/0 border border-stone-600'
+                    : ''
                   }
                   text-white hover:text-white hover:font-semibold hover:shadow-[0_0_15px_2px_rgba(255,255,255,0.4)] hover:bg-gradient-to-r from-slate-700/70 via-gray-800/80 to-black/80
                 `}
@@ -76,19 +84,20 @@ const Navbar = () => {
 
         <div className="hidden md:flex items-center gap-4">
           {isSearchOpen ? (
-            <div className="relative">
+            <form onSubmit={handleSearchSubmit} className="relative">
               <Input
                 type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search movies, series..."
                 className="w-64 pr-8 bg-gray-800 text-white border-gray-700"
                 autoFocus
-                onBlur={() => setIsSearchOpen(false)}
               />
               <X
                 className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 cursor-pointer text-gray-400"
                 onClick={() => setIsSearchOpen(false)}
               />
-            </div>
+            </form>
           ) : (
             <Search
               className="h-5 w-5 text-white hover:text-primary transition-colors cursor-pointer"
@@ -112,7 +121,6 @@ const Navbar = () => {
             </>
           ) : (
             <>
-              {/* ✅ Admin হলে Dashboard বাটন দেখাও */}
               {user.role === 'ADMIN' && (
                 <Link href="/admin/media">
                   <Button className="bg-primary text-white hover:bg-primary/80">
@@ -120,7 +128,6 @@ const Navbar = () => {
                   </Button>
                 </Link>
               )}
-
               <span className="text-white font-medium">{user.name || 'User'}</span>
               <Button
                 variant="ghost"
@@ -152,12 +159,16 @@ const Navbar = () => {
 
       {isSearchOpen && (
         <div className="md:hidden px-4 py-2 border-t border-gray-800">
-          <Input
-            type="text"
-            placeholder="Search movies, series..."
-            className="w-full bg-gray-800 text-white border-gray-700"
-            autoFocus
-          />
+          <form onSubmit={handleSearchSubmit}>
+            <Input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search movies, series..."
+              className="w-full bg-gray-800 text-white border-gray-700"
+              autoFocus
+            />
+          </form>
         </div>
       )}
 
@@ -191,7 +202,6 @@ const Navbar = () => {
                 </>
               ) : (
                 <>
-                  {/* ✅ মোবাইলেও Dashboard বাটন দেখাও */}
                   {user.role === 'ADMIN' && (
                     <Link href="/admin/media" className="flex-1" onClick={() => setIsOpen(false)}>
                       <Button className="w-full bg-primary hover:bg-primary/80 text-white">
@@ -201,7 +211,7 @@ const Navbar = () => {
                   )}
                   <Button
                     variant="destructive"
-                    className=" mr-2"
+                    className="mr-2"
                     onClick={() => {
                       handleLogout();
                       setIsOpen(false);

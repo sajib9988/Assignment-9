@@ -5,12 +5,13 @@ import { Media } from "@/type/type";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";  // Import framer-motion
+import { motion } from "framer-motion";
 
 const MediaCard = ({ media }: { media: Media }) => {
   const router = useRouter();
 
-  const handleBuyNow = () => {
+  const handleBuyNow = (e: React.MouseEvent) => {
+    e.preventDefault();
     router.push(`/checkout/${media.id}`);
   };
 
@@ -23,7 +24,13 @@ const MediaCard = ({ media }: { media: Media }) => {
       >
         <div className="relative h-64 w-full rounded-md overflow-hidden">
           <Image
-            src={typeof media.thumbnail === 'string' ? media.thumbnail : (media.thumbnail ? URL.createObjectURL(media.thumbnail) : "https://via.placeholder.com/300x450?text=No+Image")}
+            src={
+              typeof media.thumbnail === "string"
+                ? media.thumbnail
+                : media.thumbnail
+                ? URL.createObjectURL(media.thumbnail)
+                : "https://via.placeholder.com/300x450?text=No+Image"
+            }
             alt={media.title}
             fill
             className="object-cover"

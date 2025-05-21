@@ -42,6 +42,7 @@ export interface IResponse {
     genre?: string;
     title?: string;
     type?: 'MOVIE' | 'SERIES';
+    releaseDate?: string;
   }
   
   

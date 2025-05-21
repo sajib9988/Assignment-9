@@ -15,7 +15,7 @@ const mediaUploadCreate = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllMedia = catchAsync(async (req: Request, res: Response) => {
-  const filterableFields = ['searchTerm', 'genre', 'title', 'type'];
+  const filterableFields = ['searchTerm', 'genre', 'title', 'type', 'releaseDate'];
   const paginationFields = ['page', 'limit', 'sortBy', 'sortOrder'];
   const filters = pick(req.query, filterableFields);
   const paginationOptions = pick(req.query, paginationFields);

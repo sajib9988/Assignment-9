@@ -1,6 +1,7 @@
 "use server";
 
 
+import { MediaParams } from "@/type/type";
 import { revalidateTag } from "next/cache";
 
 import { cookies } from "next/headers";
@@ -26,17 +27,43 @@ export const createMedia = async (formData: FormData) => {
   return res.json(); // বা তোমার backend যা রিটার্ন করে
 };
 
-// Get All Media
-export const getAllMedia = async () => {
+
+
+export const getAllMedia = async (params?: MediaParams) => {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/media/get-all-media`, {
-      next: { tags: ["MEDIA"] },
+    const queryParams = new URLSearchParams();
+
+    if (params) {
+      if (params.searchTerm) queryParams.append('searchTerm', params.searchTerm);
+      if (params.genre) queryParams.append('genre', params.genre);
+      if (params.title) queryParams.append('title', params.title);
+      if (params.type) queryParams.append('type', params.type);
+      if (params.releaseDate) queryParams.append('releaseDate', params.releaseDate);
+
+      if (params.page) queryParams.append('page', params.page.toString());
+      if (params.limit) queryParams.append('limit', params.limit.toString());
+      if (params.sortBy) queryParams.append('sortBy', params.sortBy);
+      if (params.sortOrder) queryParams.append('sortOrder', params.sortOrder);
+    }
+
+    const url = `${process.env.NEXT_PUBLIC_BASE_API}/media/get-all-media?${queryParams.toString()}`;
+
+    const res = await fetch(url, {
+      next: { tags: ['MEDIA'] },
     });
-    return res.json();
-  } catch (error: any) {
-    return Error(error);
+
+    if (!res.ok) {
+      throw new Error('Failed to fetch media');
+    }
+
+    const data = await res.json();
+    return data; // এখানে meta এবং data থাকবে, যেমন backend থেকে আসবে
+  } catch (error) {
+    console.error('Error fetching media:', error);
+    throw error;
   }
 };
+
 
 // Get Single Media by ID
 export const getMediaById = async (mediaId: string) => {
@@ -59,7 +86,7 @@ export const getMediaById = async (mediaId: string) => {
 // Update Media
 export const updateMedia = async (mediaId: string, data: FormData) => {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/media/${mediaId}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/media/update-media/${mediaId}`, {
       method: "PATCH",
       headers: {
         Authorization: (await cookies()).get("accessToken")!.value,
