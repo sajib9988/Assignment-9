@@ -47,7 +47,8 @@ const Navbar = () => {
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchTerm.trim()) {
-      router.push(`${process.env.NEXT_PUBLIC_BASE_API}/media/get-all-media?search=${searchTerm.trim()}`);
+      // Navigate to the search page with the query parameter
+      router.push(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
       setSearchTerm('');
       setIsSearchOpen(false);
     }
@@ -90,14 +91,21 @@ const Navbar = () => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search movies, series..."
-                className="w-64 pr-8 bg-gray-800 text-white border-gray-700"
+                className="w-64 pr-10 bg-gray-800 text-white border-gray-700"
                 autoFocus
               />
+              <button
+                type="submit"
+                className="absolute right-7 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+              >
+                <Search className="h-4 w-4" />
+              </button>
               <X
-                className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 cursor-pointer text-gray-400"
+                className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 cursor-pointer text-gray-400 hover:text-red-400"
                 onClick={() => setIsSearchOpen(false)}
               />
             </form>
+
           ) : (
             <Search
               className="h-5 w-5 text-white hover:text-primary transition-colors cursor-pointer"

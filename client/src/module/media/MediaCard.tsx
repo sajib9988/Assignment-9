@@ -6,17 +6,34 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { hasPaidForMedia } from "@/service/watch";
+import { useEffect, useState } from "react";
 
 const MediaCard = ({ media }: { media: Media }) => {
   const router = useRouter();
+  const [hasPurchased, setHasPurchased] = useState(false);
+
+  useEffect(() => {
+    const checkPurchaseStatus = async () => {
+      try {
+        const result = await hasPaidForMedia(media.id);
+        setHasPurchased(result);
+        console.log("hasPurchased media card", result);
+      } catch (error) {
+        console.error("Error checking purchase status", error);
+      }
+    };
+
+    checkPurchaseStatus();
+  }, [media.id]);
 
   const handleBuyNow = (e: React.MouseEvent) => {
     e.preventDefault();
-    router.push(`/checkout/${media.id}`);
+    router.push(`/cart/${media.id}`);
   };
 
   return (
-    <Link href={`/media/${media.id}`}>
+    <Link href={hasPurchased ? `/watch/${media.id}` : `/media/${media.id}`}>
       <motion.div
         className="p-3 rounded-lg border bg-amber-100 shadow-md m-2"
         whileHover={{ scale: 1.05, boxShadow: "0 4px 20px rgba(0,0,0,0.15)" }}
@@ -48,9 +65,16 @@ const MediaCard = ({ media }: { media: Media }) => {
           <p className="text-sm text-gray-500 mt-1">Type: {media.type}</p>
 
           <div className="mt-3">
-            <Button onClick={handleBuyNow} className="w-full">
-              Buy Now
-            </Button>
+            {!hasPurchased && (
+              <Button onClick={handleBuyNow} className="w-full">
+                Buy Now
+              </Button>
+            )}
+            {hasPurchased && (
+              <Button className="w-full bg-green-600 hover:bg-green-700" disabled>
+                Purchased ✔
+              </Button>
+            )}
           </div>
         </div>
       </motion.div>
