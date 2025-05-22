@@ -2,14 +2,13 @@
 
 import { cookies } from "next/headers";
 
-
-
 export const hasPaidForMedia = async (mediaId: string) => {
   try {
-    const accessToken = (await cookies()).get("accessToken")!.value;
+    const accessToken = (await cookies()).get("accessToken")?.value;
 
-    if(!accessToken) {
-      throw new Error("Unauthorized: No access token found");
+    if (!accessToken) {
+      console.log("No access token found, user not authenticated");
+      return false;
     }
 
     const res = await fetch(
@@ -17,7 +16,7 @@ export const hasPaidForMedia = async (mediaId: string) => {
       {
         method: "GET",
         headers: {
-          Authorization: accessToken
+          Authorization: accessToken,
         },
       }
     );
@@ -37,5 +36,3 @@ export const hasPaidForMedia = async (mediaId: string) => {
     return false;
   }
 };
-
-
