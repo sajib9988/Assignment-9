@@ -6,12 +6,18 @@ import { cookies } from "next/headers";
 
 export const hasPaidForMedia = async (mediaId: string) => {
   try {
+    const accessToken = (await cookies()).get("accessToken")!.value;
+
+    if(!accessToken) {
+      throw new Error("Unauthorized: No access token found");
+    }
+
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_API}/watch/access/${mediaId}`,
       {
         method: "GET",
         headers: {
-          Authorization: (await cookies()).get("accessToken")!.value,
+          Authorization: accessToken
         },
       }
     );
