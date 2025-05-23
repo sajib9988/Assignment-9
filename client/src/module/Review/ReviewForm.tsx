@@ -33,7 +33,7 @@ export default function ReviewForm({ mediaId }: { mediaId: string }) {
   const onSubmit = async (data: ReviewFormValues) => {
     try {
 const res = await createReview({ mediaId, comment: data.comment });
-
+console.log('res from review  from', res)
       if (!res.ok) throw new Error("Submit failed");
       toast.success("Review submitted successfully!");
       form.reset();
