@@ -21,7 +21,7 @@ export const createReview = async ({ mediaId, comment }: IReviewData) => {
 
 
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/reviews`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/review`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -29,6 +29,8 @@ export const createReview = async ({ mediaId, comment }: IReviewData) => {
       },
       body: JSON.stringify({ mediaId, comment }),
     });
+
+    console.log('res service',res)
     revalidateTag("REVIEWS");
     return res.json();
   } catch (error: any) {

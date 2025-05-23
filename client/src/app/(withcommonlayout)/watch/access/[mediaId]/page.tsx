@@ -17,14 +17,15 @@ interface MediaData {
 }
 
 interface WatchPageProps {
-  params: {
+  params: Promise<{
     mediaId: string;
-  };
+  }>;
 }
 
 const WatchPage = async ({ params }: WatchPageProps) => {
-  const { mediaId } = params;
-  console.log('jjjfjhf', mediaId)
+  // ✅ Await params in Next.js 15
+  const { mediaId } = await params;
+  console.log('mediaId:', mediaId);
 
   try {
     // Check if user has paid for this media
@@ -98,21 +99,19 @@ const WatchPage = async ({ params }: WatchPageProps) => {
             <p className="text-gray-300 leading-relaxed">{media.description}</p>
           </div>
         )}
- {/* 🔥 Add review form here */}
-    <div className="bg-white p-6 text-black rounded-lg mt-1">
-      <h2 className="text-xl font-semibold mb-3">Write a Review</h2>
-      <ReviewForm mediaId={mediaId} />
-    </div>
 
+        {/* Review form */}
+        <div className="bg-white p-6 text-black rounded-lg mt-6">
+          <h2 className="text-xl font-semibold mb-3">Write a Review</h2>
+          <ReviewForm mediaId={mediaId} />
+        </div>
 
-
-    <div className="bg-gray-800 p-6 rounded-lg mt-1">
-      <RatingForm mediaId={mediaId}></RatingForm>
-    </div>
-
+        {/* Rating form */}
+        <div className="bg-gray-800 p-6 rounded-lg mt-6">
+          <RatingForm mediaId={mediaId} />
+        </div>
       </div>
     );
-    // for error show site area
   } catch (error) {
     console.error("Error in WatchPage:", error);
     return (
@@ -121,7 +120,6 @@ const WatchPage = async ({ params }: WatchPageProps) => {
           <h2 className="text-2xl font-bold text-red-500 mb-2">Error Loading Video</h2>
           <p className="text-gray-400">There was an error loading the video. Please try again later.</p>
         </div>
-
       </div>
     );
   }
