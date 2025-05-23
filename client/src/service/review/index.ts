@@ -3,16 +3,31 @@
 import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 
-// Create Review
-export const createReview = async (data: { mediaId: string; comment: string }) => {
+
+interface IReviewData {
+  mediaId: string;
+  comment: string;
+}
+
+export const createReview = async ({ mediaId, comment }: IReviewData) => {
   try {
+     const accessToken = (await cookies()).get("accessToken")?.value;
+
+ 
+    if (!accessToken) {
+      console.log("No access token found, user not authenticated");
+      return false;
+    }
+
+
+
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/reviews`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: (await cookies()).get("accessToken")!.value,
+        Authorization: accessToken,
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify({ mediaId, comment }),
     });
     revalidateTag("REVIEWS");
     return res.json();
@@ -21,10 +36,21 @@ export const createReview = async (data: { mediaId: string; comment: string }) =
   }
 };
 
+
 // Get Reviews by Media ID
 export const getReviewsByMedia = async (mediaId: string) => {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/reviews/${mediaId}`, {
+      next: { tags: ["REVIEWS"] },
+    });
+    return res.json();
+  } catch (error: any) {
+    return Error(error);
+  }
+};
+export const getALLReview = async () => {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/reviews`, {
       next: { tags: ["REVIEWS"] },
     });
     return res.json();

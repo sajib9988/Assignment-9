@@ -37,6 +37,7 @@ export interface User {
   name: string;
   email: string;
   role: UserRole;
+  password?:string,
   createdAt: string;
   updatedAt: string;
 }
@@ -65,19 +66,14 @@ export interface Rating {
   media?: Media;
 }
 
-export interface Review {
-  id: string;
-  userId: string;
+export type IReview = {
+  id?: string;
+  userId?: string;
   mediaId: string;
   comment: string;
-  user?: User;
-  media?: Media;
-  createdAt: string;
-  likes?: number;
-  isApproved?: boolean;
-  hasSpoilers?: boolean;
-  tags?: string[];
-}
+  rating?: string; 
+  createdAt?: Date;
+};
 
 export interface Payment {
   id: string;

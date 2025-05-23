@@ -33,7 +33,7 @@ const MediaCard = ({ media }: { media: Media }) => {
   };
 
   return (
-    <Link href={hasPurchased ? `/watch/${media.id}` : `/media/${media.id}`}>
+    <Link href={hasPurchased ? `/watch/access/${media.id}` : `/media/${media.id}`}>
       <motion.div
         className="p-3 rounded-lg border bg-amber-100 shadow-md m-2"
         whileHover={{ scale: 1.05, boxShadow: "0 4px 20px rgba(0,0,0,0.15)" }}
